@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>Komari Monitor</title>
+    <meta name="description" content="A simple server monitor tool." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#dff8fb" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Komari Monitor" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <style>
+      .legacy-browser-message {
+        display: none;
+        padding: 24px;
+        font:
+          16px/1.6 -apple-system,
+          BlinkMacSystemFont,
+          'Segoe UI',
+          sans-serif;
+      }
+      .no-esm .legacy-browser-message {
+        display: block;
+      }
+    </style>
+    <script>
+      ;(function () {
+        try {
+          var root = document.documentElement
+          var css = window.CSS
+          var supportsModernColor =
+            !!css &&
+            css.supports('color', 'oklch(0.5 0.1 120)') &&
+            css.supports('color', 'color-mix(in srgb, red 50%, white)')
+          if (!supportsModernColor) root.classList.add('legacy-webkit')
+          if (!('noModule' in document.createElement('script'))) root.classList.add('no-esm')
+
+          var mode = localStorage.getItem('themeMode')
+          var isDark = mode === 'dark'
+
+          if (mode !== 'dark' && mode !== 'light') {
+            var hour = Number(
+              new Intl.DateTimeFormat('en-US', {
+                hour: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Shanghai',
+              }).format(new Date()),
+            )
+            if (hour === 24) hour = 0
+            isDark = Number.isFinite(hour) ? hour < 7 || hour >= 19 : true
+          }
+
+          root.classList.toggle('dark', isDark)
+          root.style.colorScheme = isDark ? 'dark' : 'light'
+        } catch (error) {
+          document.documentElement.classList.add('dark')
+          document.documentElement.classList.add('legacy-webkit')
+          document.documentElement.style.colorScheme = 'dark'
+        }
+      })()
+    </script>
+    <script>
+      ;(function () {
+        if (!('serviceWorker' in navigator)) return
+
+        window.addEventListener('load', function () {
+          navigator.serviceWorker
+            .register('/sw.js', { scope: '/', updateViaCache: 'none' })
+            .then(function (registration) {
+              return registration.update()
+            })
+            .catch(function (error) {
+              console.warn('[Glassmorphism] Service Worker compatibility update failed.', error)
+            })
+        })
+      })()
+    </script>
+    <script type="module" crossorigin src="/assets/index-snjfHix_.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vue-vendor-CuZDMMoe.js">
+    <link rel="modulepreload" crossorigin href="/assets/vueuse-DhEquVXX.js">
+    <link rel="modulepreload" crossorigin href="/assets/reka-ui-DKjqbunE.js">
+    <link rel="modulepreload" crossorigin href="/assets/v3-services-CSJ-go58.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-DZyRNUcv.css">
+  <style id="general-card-center">.group.relative.z-10.h-full.bg-background\/50{text-align:center!important}.group.relative.z-10.h-full.bg-background\/50 div{justify-content:center!important}.group.relative.z-10.h-full.bg-background\/50 div.flex-col{align-items:stretch!important}.group.relative.z-10.h-full.bg-background\/50 span{text-align:center!important}#app .home-view .grid.grid-cols-3 > :nth-child(5){text-align:left!important}#app .home-view .grid.grid-cols-3 > :nth-child(5) div{justify-content:flex-start!important}#app .home-view .grid.grid-cols-3 > :nth-child(5) span{text-align:left!important}.general-card-centered{text-align:center!important}.general-card-centered div{justify-content:center!important}.general-card-centered div.flex-col{align-items:stretch!important}.general-card-centered span{text-align:center!important}.general-card-original{text-align:left!important}.general-card-original div{justify-content:flex-start!important}.group.relative.z-10.h-full.bg-background\/50:has(span.whitespace-nowrap){text-align:left!important}.group.relative.z-10.h-full.bg-background\/50:has(span.whitespace-nowrap) div{justify-content:flex-start!important}.group.relative.z-10.h-full.bg-background\/50:has(span.whitespace-nowrap) div.flex-col{align-items:stretch!important}.group.relative.z-10.h-full.bg-background\/50:has(span.whitespace-nowrap) span{text-align:left!important}</style>
+  <style id="font-clarity">
+/* Make card text stand out over wallpaper: subtle shadow + bolder values */
+#app { text-shadow: 0 1px 4px rgba(255,255,255,0.55); }
+</style>
+  <style id="announcement-squares">
+/* Announcement: one row, full text visible - shrink font and padding to fit */
+.home-view > div:first-child {
+  padding: 6px 10px !important;
+}
+.home-view > div:first-child, .home-view > div:first-child p, .home-view > div:first-child span, .home-view > div:first-child a {
+  white-space: nowrap !important;
+  overflow: visible !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+/* Latency / loss history squares: a bit bigger and more vivid */
+.bg-signal-1, .bg-signal-2, .bg-signal-3, .bg-signal-4, .bg-signal-5 {
+  min-height: 10px !important;
+  height: 10px !important;
+  filter: saturate(1.35) brightness(1.08);
+  box-shadow: 0 0 0 0.5px rgba(0,0,0,0.18);
+  border-radius: 2px;
+}
+</style>
+  <style id="card-opacity">.group.relative.z-10.h-full.bg-background\/50{background-color:color-mix(in oklab, var(--background) 88%, transparent)!important}.node-card{background-color:var(--card)!important}</style>
+  <style id="card-overflow-guard">.group.relative.z-10.h-full.bg-background\/50 span{max-width:100%!important}</style>
+  <style id="light-glass">html:not(.dark) .group.relative.z-10.h-full.bg-background\/50{background-color:color-mix(in oklab, var(--background) 55%, transparent)!important;backdrop-filter:blur(12px) saturate(1.2)!important;-webkit-backdrop-filter:blur(12px) saturate(1.2)!important}html:not(.dark) .node-card{background-color:color-mix(in oklab, var(--card) 65%, transparent)!important;backdrop-filter:blur(12px) saturate(1.2)!important;-webkit-backdrop-filter:blur(12px) saturate(1.2)!important}</style>
+  <style id="card-flex-truncate">.group.relative.z-10.h-full.bg-background\/50 div span{min-width:0!important}.group.relative.z-10.h-full.bg-background\/50{overflow:hidden!important}</style>
+  </head>
+
+  <body>
+    <div class="legacy-browser-message" role="alert">
+      当前 iOS 浏览器内核版本过低，请升级到 iOS 15.4 或更高版本后访问。
+    </div>
+    <div id="app"></div>
+  <script>
+(function(){
+var WPS=[
+{name:"夕阳",url:"/themes/user-assets/komari-wallpaper-sunset.webp"},
+{name:"海景",url:"/themes/user-assets/komari-wallpaper-sea.webp"},
+{name:"山峰",url:"/themes/user-assets/komari-wallpaper-peaks.webp"},
+{name:"雨林",url:"/themes/user-assets/komari-wallpaper-rainforest.webp"},
+{name:"星空湖泊",url:"/themes/user-assets/komari-wallpaper-starry.webp"},
+{name:"秋日森林",url:"/themes/user-assets/komari-wallpaper-autumn.webp"},
+{name:"草原日落",url:"/themes/user-assets/komari-wallpaper-grassland.webp"},
+{name:"瀑布峡谷",url:"/themes/user-assets/komari-wallpaper-waterfall.webp"},
+{name:"山间湖泊",url:"/themes/user-assets/komari-wallpaper-landscape.webp"},
+{name:"日出海崖",url:"/themes/user-assets/komari-wallpaper-landscape-2.webp"},
+{name:"风景01",url:"/themes/user-assets/komari-wallpaper-wp01.jpg"},
+{name:"风景03",url:"/themes/user-assets/komari-wallpaper-wp03.jpg"},
+{name:"风景07",url:"/themes/user-assets/komari-wallpaper-wp07.jpg"},
+{name:"风景08",url:"/themes/user-assets/komari-wallpaper-wp08.jpg"},
+{name:"风景09",url:"/themes/user-assets/komari-wallpaper-wp09.jpg"},
+{name:"风景10",url:"/themes/user-assets/komari-wallpaper-wp10.jpg"},
+{name:"风景11",url:"/themes/user-assets/komari-wallpaper-wp11.jpg"},
+{name:"风景12",url:"/themes/user-assets/komari-wallpaper-wp12.jpg"},
+{name:"风景13",url:"/themes/user-assets/komari-wallpaper-wp13.jpg"},
+{name:"风景14",url:"/themes/user-assets/komari-wallpaper-wp14.jpg"},
+{name:"风景15",url:"/themes/user-assets/komari-wallpaper-wp15.jpg"},
+{name:"风景16",url:"/themes/user-assets/komari-wallpaper-wp16.jpg"},
+{name:"风景17",url:"/themes/user-assets/komari-wallpaper-wp17.jpg"},
+{name:"风景18",url:"/themes/user-assets/komari-wallpaper-wp18.jpg"},
+{name:"风景19",url:"/themes/user-assets/komari-wallpaper-wp19.jpg"},
+{name:"风景21",url:"/themes/user-assets/komari-wallpaper-wp21.jpg"},
+{name:"风景22",url:"/themes/user-assets/komari-wallpaper-wp22.jpg"},
+{name:"风景23",url:"/themes/user-assets/komari-wallpaper-wp23.jpg"},
+{name:"风景24",url:"/themes/user-assets/komari-wallpaper-wp24.jpg"}
+];
+var KEY="komari-wallpaper-choice";
+var MODE="komari-wallpaper-mode";
+function getIdx(){try{var v=localStorage.getItem(KEY); if(v!==null) return parseInt(v,10)||0;}catch(e){} return 0;}
+function getMode(){try{return localStorage.getItem(MODE)||"manual";}catch(e){return "manual";}}
+function setMode(m){try{localStorage.setItem(MODE,m);}catch(e){}}
+function apply(idx){
+if(idx<0||idx>=WPS.length) idx=0;
+var wp=WPS[idx];
+document.body.style.backgroundImage="url("+wp.url+")";
+document.body.style.backgroundSize="cover";
+document.body.style.backgroundPosition="center";
+document.body.style.backgroundAttachment="fixed";
+var els=document.querySelectorAll("*");
+for(var i=0;i<els.length;i++){
+var cs=getComputedStyle(els[i]);
+if(cs.backgroundImage && cs.backgroundImage.indexOf("user-assets")>=0){
+els[i].style.backgroundImage="url("+wp.url+")";
+els[i].style.backgroundSize="cover";
+els[i].style.backgroundPosition="center";
+}
+}
+try{localStorage.setItem(KEY,String(idx));}catch(e){}
+var cur=document.getElementById("wp-cur");
+if(cur) cur.textContent="当前："+wp.name;
+}
+function init(){
+var mode=getMode();
+var idx=getIdx();
+if(mode==="random"){
+var nxt=Math.floor(Math.random()*WPS.length);
+if(WPS.length>1 && nxt===idx) nxt=(nxt+1)%WPS.length;
+idx=nxt;
+}
+var btn=document.createElement("button");
+btn.id="wp-switcher-btn";
+btn.textContent="壁纸";
+btn.style.cssText="position:fixed;right:8px;bottom:8px;z-index:9999;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,0.25);background:rgba(13,17,26,0.6);color:#f7f8fb;font-size:11px;line-height:1.4;backdrop-filter:blur(12px);cursor:pointer;opacity:0.85;";
+var menu=document.createElement("div");
+menu.id="wp-menu";
+menu.style.cssText="position:fixed;right:8px;bottom:36px;z-index:9999;display:none;background:rgba(13,17,26,0.85);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:8px;backdrop-filter:blur(12px);color:#f7f8fb;font-size:12px;min-width:150px;";
+menu.innerHTML='<div id="wp-cur" style="padding:4px 8px;color:#d6dae4;"></div>'
++'<div id="wp-next" style="padding:6px 8px;cursor:pointer;">换一张</div>'
++'<div id="wp-fixed" style="padding:6px 8px;cursor:pointer;">固定当前壁纸</div>'
++'<div id="wp-random" style="padding:6px 8px;cursor:pointer;"></div>';
+document.body.appendChild(menu);
+document.body.appendChild(btn);
+btn.onclick=function(){menu.style.display=(menu.style.display==="none"||!menu.style.display)?"block":"none"; refreshMenu();};
+function refreshMenu(){
+var m=getMode();
+document.getElementById("wp-random").textContent="随机壁纸："+(m==="random"?"开":"关");
+document.getElementById("wp-fixed").textContent="固定当前壁纸"+(m==="fixed"?" ✓":"");
+}
+menu.querySelector("#wp-next").onclick=function(){var cur=getIdx(); apply((cur+1)%WPS.length); if(getMode()==="fixed"){setMode("fixed");} menu.style.display="none";};
+menu.querySelector("#wp-fixed").onclick=function(){setMode("fixed"); refreshMenu(); menu.style.display="none";};
+menu.querySelector("#wp-random").onclick=function(){
+if(getMode()==="random"){setMode("manual");}
+else{setMode("random"); var cur=getIdx(); var nxt=Math.floor(Math.random()*WPS.length); if(WPS.length>1 && nxt===cur) nxt=(nxt+1)%WPS.length; apply(nxt);}
+refreshMenu(); menu.style.display="none";
+};
+apply(idx);
+setTimeout(function(){apply(getIdx());},1500);
+setTimeout(function(){apply(getIdx());},4000);
+}
+if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",init); else init();
+})();
+</script>
+  </body>
+</html>
